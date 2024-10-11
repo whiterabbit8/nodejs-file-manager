@@ -1,12 +1,13 @@
 import readline from 'readline';
 import { homedir } from 'os';
-import { goUp } from './navigation.js';
+import { goUp, goToPath } from './navigation.js';
 
 const { stdin, stdout } = process;
 
 const store = {
   username: '',
   workingDir: homedir(),
+  separator: homedir().includes('/') ? '/' : '\\',
 };
 
 const storeName = () => {
@@ -15,7 +16,7 @@ const storeName = () => {
 }
 
 const showCurrentDir = (dir = store.workingDir) => {
-  const currentDirMessage = `You are currently in ${dir} \n`;
+  const currentDirMessage = `You are currently in ${dir} \n\n`;
   stdout.write(currentDirMessage);
 }
 
@@ -31,9 +32,10 @@ const startApp = () => {
   rl.on('line', (data) => {
     if (data === '.exit') {
       process.exit();
-    } else {
-      //goUp();
-      showCurrentDir();
+    } else if (data === 'up') {
+      goUp();
+    } else if (data.startsWith('cd')) {
+      goToPath(data);
     }
   })
   process.on('exit', () => stdout.write(exitMessage));
@@ -43,4 +45,5 @@ startApp();
 
 export {
   store,
+  showCurrentDir,
 }
