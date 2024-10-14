@@ -1,7 +1,7 @@
 import readline from 'readline';
 import { homedir } from 'os';
 import { goUp, goToPath, showList } from './navigation.js';
-import { createFile, printFile } from './fs.js';
+import { createFile, printFile, renameFile } from './fs.js';
 
 const { stdin, stdout } = process;
 
@@ -43,6 +43,8 @@ const startApp = () => {
       printFile(data);
     } else if (data.startsWith('add')) {
       createFile(data);
+    } else if (data.startsWith('rn')) {
+      renameFile(data);
     }
     else if (data !== '') {
       console.log('Operation failed: unknown command');
