@@ -1,6 +1,6 @@
 import readline from 'readline';
 import { homedir } from 'os';
-import { goUp, goToPath } from './navigation.js';
+import { goUp, goToPath, showList } from './navigation.js';
 
 const { stdin, stdout } = process;
 
@@ -23,7 +23,7 @@ const showCurrentDir = (dir = store.workingDir) => {
 const startApp = () => {
   storeName();
   const greetingMessage = `Welcome to the File Manager, ${store.username}! \n`;
-  const exitMessage = `Thank you for using File Manager, ${store.username}, goodbye! \n`;
+  const exitMessage = `\n Thank you for using File Manager, ${store.username}, goodbye! \n`;
   const rl = readline.createInterface(stdin, stdout);
 
   stdout.write(greetingMessage);
@@ -32,10 +32,15 @@ const startApp = () => {
   rl.on('line', (data) => {
     if (data === '.exit') {
       process.exit();
-    } else if (data === 'up') {
+    } else if (data.trim() === 'up') {
       goUp();
     } else if (data.startsWith('cd')) {
       goToPath(data);
+    } else if (data.trim() === 'ls') {
+      showList();
+    } else if (data !== '') {
+      console.log('Operation failed: unknown command');
+      showCurrentDir();
     }
   })
   process.on('exit', () => stdout.write(exitMessage));

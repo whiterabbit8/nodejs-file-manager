@@ -1,9 +1,5 @@
-import { access } from 'fs/promises';
-//import path from 'path';
-//import { fileURLToPath } from 'url';
+import { access, readdir } from 'fs/promises';
 import { showCurrentDir, store } from "./index.js";
-
-//const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const goUp = async () => {
   const dirsArr = store.workingDir.split(store.separator);
@@ -26,11 +22,33 @@ const goToPath = async (command) => {
 
   await access (newDir)
     .then(() => store.workingDir = newDir)
-    .catch(() => console.log(`Invalid input: path ${newDir} does not exist.`))
+    .catch(() => console.log(`Operation failed: path ${newDir} does not exist.`))
+    .finally(() => showCurrentDir())
+}
+
+const showList = async () => {
+  const list = [];
+
+  await readdir(store.workingDir, { withFileTypes: true })
+    .then((files) => {
+      files.forEach((file) => {
+        if (file.isDirectory()) {
+          list.push({ 'Name': file.name, 'Type': 'directory' });
+        } else {
+          list.push({ 'Name': file.name, 'Type': 'file' });
+        }
+      });
+      list.sort((a, b) => {
+        return a.Type.localeCompare(b.Type);
+      })
+      console.table(list);
+    })
+    .catch((err) => console.log('Operation failed'))
     .finally(() => showCurrentDir())
 }
 
 export {
   goUp,
   goToPath,
+  showList
 };
